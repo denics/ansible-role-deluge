@@ -1,17 +1,21 @@
 ---
 galaxy_info:
-  author: Gregory Shulov
-  description: An ansible role to setup and configure Deluge and Deluge-Web Daemons under Ubuntu distro's.
+  author: Denis Pitzalis
+  description: Configure and Install Kodi with Mysql support
   license: BSD
-  min_ansible_version: 2.0
+  
+  min_ansible_version: 2.4
+
   platforms:
-  - name: Ubuntu
-    versions:
-      - trusty
+    - name: Raspbian
+      versions:
+      - stretch
+  
   galaxy_tags:
     - htpc
     - system
-dependencies:
-  - GR360RY.htpc-common
-  - GR360RY.nzbtomedia
+    - rpi
 
+dependencies:
+- denics.htpc-common
+- denics.htpc-nzbtomedia
