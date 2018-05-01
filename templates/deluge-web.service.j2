@@ -1,0 +1,17 @@
+[Unit]
+Description=Deluge Bittorrent Client Web Interface
+Documentation=man:deluge-web
+After=network-online.target deluged.service
+Wants=deluged.service
+[Service]
+Type=simple
+User={{ htpc_user_username }}
+Group={{ htpc_user_group }}
+UMask=027
+# This 5 second delay is necessary on some systems
+# to ensure deluged has been fully started
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/deluge-web -c {{ deluged_path }}/config -l /var/log/deluged.log -L warning
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

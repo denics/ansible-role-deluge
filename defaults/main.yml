@@ -5,7 +5,7 @@
 deluge_enabled: yes
 
 # Deluge Daemon Path
-deluged_path: /opt/deluged
+deluged_path: /{{ htpc_media_path }}/.deluged
 
 # Deluge Incomplete download locations
 deluged_incomplete: "{{ htpc_downloads_incomplete }}/deluged"

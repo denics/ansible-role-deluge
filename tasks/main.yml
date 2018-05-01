@@ -1,15 +1,12 @@
 ---
 # tasks file for deluge
 
-- name: Add Deluge PPA
-  apt_repository: repo=ppa:deluge-team/ppa state=present
-
 - name: Install Deluge Daemon
   apt: name={{ item }} state=latest update_cache=yes cache_valid_time=3600
   with_items:
     - deluged
-    - deluge-web
     - deluge-console
+    - deluge-web
 
 - name: Create Deluge Daemon Directory
   file: path={{ item }} state=directory owner={{ htpc_user_username }} group={{ htpc_user_group }} mode=0755
@@ -18,11 +15,14 @@
     - "{{ deluged_path }}/config"
     - "{{ deluged_path }}/config/state"
 
-- name: Update Deluge Daemon Upstart Job
-  template: src=deluged.conf.j2 dest=/etc/init/deluged.conf owner=root group=root mode=0755
+- name: Create Deluge log file
+  file: path=/var/log/deluged.log state=touch owner={{ htpc_user_username }} group=adm mode=0755
 
-- name: Update Deluge Web Upstart Job
-  template: src=deluge-web.conf.j2 dest=/etc/init/deluge-web.conf owner=root group=root mode=0755
+- name: Install Deluge Daemon Service Job
+  template: src=deluged.service.j2 dest=/etc/systemd/system/deluged.service owner=root group=root mode=0755
+
+- name: Install Deluge Web Service Job
+  template: src=deluge-web.service.j2 dest=/etc/systemd/system/deluge-web.service owner=root group=root mode=0755
 
 - name: Create Deluge Incomplete downloads folders
   file: path={{ item }} state=directory owner={{ htpc_user_username }} group={{ htpc_user_group }} mode=0775 recurse=yes
@@ -36,7 +36,7 @@
   template: src=execute.conf.j2 dest="{{ deluged_path }}/config/execute.conf" owner={{ htpc_user_username }} group={{ htpc_user_group }} mode=0640
 
 - name: Update Deluge credentials
-  lineinfile: dest={{ deluged_path }}/config/auth regexp='^localclient' line='localclient:{{ deluged_localclient_password }}:10' owner={{ htpc_user_username }} group={{ htpc_user_group }} mode=0600 create=yes
+  lineinfile: dest={{ deluged_path }}/config/auth regexp='^localclient' line='{{ deluged_user }}:{{ deluged_password }}:10' owner={{ htpc_user_username }} group={{ htpc_user_group }} mode=0600 create=yes
 
 - name: Update Deluge Web web.conf
   template: src=web.conf.j2 dest={{ deluged_path }}/config/web.conf owner={{ htpc_user_username }} group={{ htpc_user_group }} mode=0640
@@ -47,11 +47,11 @@
   register: deluged_core_update
 
 - name: Stop deluge web daemon before reapplying web.conf update
-  service: name=deluged state=stopped
+  systemd: name=deluged state=stopped
   when: deluged_web_update.changed
 
 - name: Stop deluged daemon before reapplying core.conf update
-  service: name=deluged state=stopped
+  systemd: name=deluged state=stopped
   when: deluged_core_update.changed
 
 - name: Reapply deluged core.conf update
@@ -63,7 +63,7 @@
   register: deluged_web_update.changed
 
 - name: Make sure Deluge Daemon is running and enabled on boot
-  service: name=deluged state=started enabled=yes
+  systemd: name=deluged state=started enabled=yes daemon_reload=yes
 
 - name: Make sure Deluge Web is running and enabled on boot
-  service: name=deluge-web state=started enabled=yes
+  systemd: name=deluge-web state=started enabled=yes daemon_reload=yes

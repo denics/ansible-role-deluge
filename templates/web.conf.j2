@@ -4,7 +4,7 @@
 }{
   "sidebar_show_zero": false,
   "show_session_speed": false,
-  "pwd_sha1": "2ce1a410bcdcc53064129b6d950f2e9fee4edc1e",
+  "pwd_sha1": "{{ deluged_password }}",
   "show_sidebar": true,
   "sessions": {},
   "enabled_plugins": [],
@@ -14,8 +14,8 @@
   "pkey": "ssl/daemon.pkey",
   "cert": "ssl/daemon.cert",
   "session_timeout": 3600,
-  "https": false,
-  "default_daemon": "127.0.0.1:58846",
+  "https": true,
+  "default_daemon": "127.0.0.1:{{ deluged_port }}",
   "sidebar_multiple_filters": true,
   "pwd_salt": "c26ab3bbd8b137f99cd83c2c1c0963bcc1a35cad",
   "port": {{ deluge_web_port }}

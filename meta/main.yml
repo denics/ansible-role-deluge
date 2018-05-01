@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Denis Pitzalis
-  description: Configure and Install Kodi with Mysql support
+  description: Configure and Install Deluged
   license: BSD
   
   min_ansible_version: 2.4
@@ -18,4 +18,3 @@ galaxy_info:
 
 dependencies:
 - denics.htpc-common
-- denics.htpc-nzbtomedia
